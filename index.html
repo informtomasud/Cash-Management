@@ -56,6 +56,15 @@
             .print-card { border: 1px solid #ccc; box-shadow: none !important; }
         }
         .print-only { display: none; }
+        /* Hide spin buttons for input type="number" */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 
 </head>
@@ -1215,6 +1224,10 @@ function getAllData(ss) {
         }
 
         function openSheetsConfigModal() {
+            if (!loggedInUser || loggedInUser.role !== 'admin') {
+                showToast("শুধুমাত্র অ্যাডমিন গুগল শিট ডাটাবেজ কনফিগার করতে পারবেন!", "error");
+                return;
+            }
             const savedUrl = localStorage.getItem('agent_bank_sheets_url') || '';
             document.getElementById('sheetsWebAppUrlInput').value = savedUrl;
             const disconnectBtn = document.getElementById('disconnectSheetsBtn');
@@ -1360,6 +1373,12 @@ function getAllData(ss) {
                 } catch(e) {}
             });
         }
+                // Prevent mouse wheel from changing number input values
+        document.addEventListener('wheel', function(e) {
+            if (document.activeElement && document.activeElement.type === 'number') {
+                document.activeElement.blur();
+            }
+        }, { passive: true });
         window.onload = function() {
             loadFromStorage();
             startLiveClock();
